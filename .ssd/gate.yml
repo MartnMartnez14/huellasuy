@@ -1,0 +1,5 @@
+checks:
+  - pytest
+  - mobile-review
+  - no-secrets
+  - expiration-24h
