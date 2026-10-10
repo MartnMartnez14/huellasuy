@@ -12,7 +12,7 @@ from werkzeug.exceptions import HTTPException
 from auth import install as install_auth, admin as is_admin
 from werkzeug.security import generate_password_hash
 from config import Config
-from database import cleanup, connect, initialize
+from database import cleanup, connect, initialize, REPORT_SELECT
 
 ANIMALS = {'dog', 'cat', 'other'}
 STATUSES = {'lost', 'seen', 'found', 'abandoned'}
@@ -25,6 +25,8 @@ def public_report(row):
     for k in ('created_at', 'expires_at'):
         data[k] = datetime.fromtimestamp(row[k], timezone.utc).isoformat()
     if current_app.config['AUTH_ENABLED']:
+        data['author'] = ({'username': row['author_username'], 'emoji': row['author_emoji']}
+                          if row['author_username'] is not None else None)
         data['can_delete'] = bool(g.user and (row['author_id'] == g.user['id'] or is_admin(g.user)))
     data['pastel_color'] = COLORS[row['id'] % len(COLORS)]
     return data
@@ -141,11 +143,11 @@ def create_app(test_config=None):
         with connect(app.config['DATABASE_PATH']) as db:
             cleanup(db, now)
             if report_id is not None:
-                row = db.execute('SELECT * FROM reports WHERE id=? AND expires_at>?', (report_id, now)).fetchone()
+                row = db.execute(REPORT_SELECT + ' WHERE r.id=? AND r.expires_at>?', (report_id, now)).fetchone()
                 if not row:
                     return jsonify(error='Esta alerta ya expiró o fue eliminada.'), 404
                 return jsonify(report=public_report(row), server_time=now)
-            query = 'SELECT * FROM reports WHERE expires_at>?'
+            query = REPORT_SELECT + ' WHERE r.expires_at>?'
             params = [now]
             for field, allowed in [('animal_type', ANIMALS), ('status_type', STATUSES)]:
                 value = request.args.get(field)
@@ -154,7 +156,7 @@ def create_app(test_config=None):
                         return jsonify(error='Filtro inválido.'), 400
                     query += f' AND {field}=?'
                     params.append(value)
-            rows = db.execute(query + ' ORDER BY created_at DESC', params).fetchall()
+            rows = db.execute(query + ' ORDER BY r.created_at DESC', params).fetchall()
         return jsonify(reports=[public_report(row) for row in rows], server_time=now)
 
     @app.post('/api/reports')
@@ -177,7 +179,7 @@ def create_app(test_config=None):
             cursor = db.execute('INSERT INTO reports (title,description,animal_type,status_type,latitude,longitude,created_at,expires_at,delete_token_hash) VALUES (?,?,?,?,?,?,?,?,?)', values + [now, now + app.config['REPORT_TTL_HOURS'] * 3600, hashlib.sha256(token.encode()).hexdigest()])
             if app.config['AUTH_ENABLED']:
                 db.execute('UPDATE reports SET author_id=? WHERE id=?', (g.user['id'], cursor.lastrowid))
-            row = db.execute('SELECT * FROM reports WHERE id=?', (cursor.lastrowid,)).fetchone()
+            row = db.execute(REPORT_SELECT + ' WHERE r.id=?', (cursor.lastrowid,)).fetchone()
         return jsonify(report=public_report(row), delete_token=token, server_time=now), 201
 
     @app.delete('/api/reports/<int:report_id>')

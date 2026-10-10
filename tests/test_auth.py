@@ -166,3 +166,29 @@ def test_failed_email_removes_pending_token(env):
     assert register(c).status_code==503
     with sqlite3.connect(cfg['DATABASE_PATH']) as db:
         assert db.execute('SELECT COUNT(*) FROM account_tokens').fetchone()[0]==0
+
+
+def test_author_identity_is_server_assigned_and_private(env):
+    app,c,mail,clock,cfg=env
+    verified(c,mail)
+    from tests.test_app import payload
+    data=payload()
+    data.update(author={'username':'forged','emoji':'🦊'},author_id=999)
+    created=c.post('/api/reports',json=data,headers={'Origin':'http://localhost'})
+    assert created.status_code==201
+    expected=created.json['report']['author']
+    assert expected['username']=='user'
+    assert set(expected)=={'username','emoji'}
+    report_id=created.json['report']['id']
+    stranger=app.test_client(); verified(stranger,mail,'other@example.org','other')
+    for report in (stranger.get('/api/reports').json['reports'][0],stranger.get(f'/api/reports/{report_id}').json['report']):
+        assert report['author']==expected
+        assert report['can_delete'] is False
+        for private in ('email','author_id','password_hash','delete_token_hash'):
+            assert private not in report
+        assert 'user@example.org' not in str(report)
+    with sqlite3.connect(cfg['DATABASE_PATH']) as db:
+        db.execute('UPDATE reports SET author_id=NULL WHERE id=?',(report_id,))
+    assert stranger.get('/api/reports').json['reports'][0]['author'] is None
+    clock[0]+=86400
+    assert stranger.get(f'/api/reports/{report_id}').status_code==404

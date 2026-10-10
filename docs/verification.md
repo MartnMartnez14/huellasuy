@@ -52,3 +52,7 @@ Entrega limitada a cuentas y administración; no exige implementar fotos/comenta
 Validación de cierre local: 29 pruebas aprobadas en 7.93 s; Chrome con registro → verificación → acceso → recuperación → nuevo acceso, retirada administrativa y cierre que bloquea mapa. Cuatro anchos, sin errores JavaScript. Correo simulado; no se afirma comprobación de enlaces reales.
 
 Corrección visual tras la prueba real de correo: las reglas display de componentes sobrescribían el atributo hidden en etiquetas y avisos. Se fija hidden de forma global; Verificar correo no muestra Nueva contraseña. El autor recibió el enlace real; confirmar su consumo y acceso sigue pendiente.
+
+El autor confirmó en producción el 10 de octubre registro, recepción y confirmación del enlace, acceso con borde dorado, panel administrativo y publicación/eliminación de su alerta. Recuperación real e incógnito sin sesión siguen pendientes de confirmación. Se añade autor visible (usuario y emoji) en lista y popup del mapa, conservando correos privados.
+
+Autor visible: `.venv-system/bin/python -m pytest -q`: 30 aprobadas en 8.30 s. Prueba de Chrome local con datos aislados confirmó el mismo usuario en lista y popup, tras filtro, sin errores JavaScript. La API ignora autor falsificado en el formulario, conserva identidad del creador frente a otro visitante y excluye correo/hashes.

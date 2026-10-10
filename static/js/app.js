@@ -22,6 +22,7 @@ function card(r, includeMapButton = true) {
   const el = document.createElement('article'); el.className = 'card'; el.style.setProperty('--accent', r.pastel_color);
   const add = (tag, text) => { const n = document.createElement(tag); n.textContent = text; el.append(n); return n; };
   add('h3', `${r.animal_type === 'dog' ? '🐶' : r.animal_type === 'cat' ? '🐱' : '🐾'} ${r.title}`);
+  if ('author' in r) add('small', r.author ? `Usuario: ${r.author.emoji} ${r.author.username}` : 'Usuario: aviso anterior sin cuenta');
   add('small', {lost:'Posiblemente perdido',seen:'Animal visto',found:'Encontrado',abandoned:'Posible abandono'}[r.status_type]);
   add('p', r.description); add('small', '📍 Ubicación aproximada');
   add('small', `Reportado hace ${Math.max(0, Math.floor((now() - Date.parse(r.created_at)) / 60000))} min`);

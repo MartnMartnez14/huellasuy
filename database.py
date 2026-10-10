@@ -41,3 +41,8 @@ def cleanup(db, now):
         db.execute('DELETE FROM account_tokens WHERE expires_at<=?', (now,))
         db.execute('DELETE FROM account_sessions WHERE expires_at<=?', (now,))
         db.execute('DELETE FROM auth_attempts WHERE created_at<=?', (now-3600,))
+
+
+# Author projection deliberately excludes emails, hashes and internal account IDs.
+REPORT_SELECT = ('SELECT r.*, u.username AS author_username, u.emoji AS author_emoji '
+                 'FROM reports r LEFT JOIN users u ON u.id=r.author_id')

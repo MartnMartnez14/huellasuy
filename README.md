@@ -54,7 +54,7 @@ Proyecto open source, creado por Martín Martínez García. La entrega v1 no tie
 Marcás dónde viste al animal, escribís una descripción y publicás. Otros visitantes consultan la misma base; su pantalla se actualiza cada 15 segundos mientras está visible. Guardá tu enlace privado para eliminar la alerta antes de que venza. No publiques datos personales.
 
 ## Entrega v2.0: cuentas verificadas
-La entrega de cuentas está implementada y **desactivada por defecto hasta completar el despliegue**. Incluye acceso, recuperación, emoji de usuario, borrado de alertas propias y administración por correo verificado. La aplicación online no se actualiza con solo subir a GitHub: requiere activar y probar PythonAnywhere. Fotos, comentarios, contactos y duraciones opcionales se trabajarán otro día. Ver [cuentas y activación](docs/accounts.md).
+La entrega de cuentas está implementada y **desactivada por defecto hasta completar el despliegue**. Incluye acceso, recuperación, emoji y nombre de usuario visibles en los reportes, borrado de alertas propias y administración por correo verificado. La aplicación online no se actualiza con solo subir a GitHub: requiere activar y probar PythonAnywhere. Fotos, comentarios, contactos y duraciones opcionales se trabajarán otro día. Ver [cuentas y activación](docs/accounts.md).
 
 ## Tecnologías y arquitectura
 Python 3.12+, Flask, SQLite, HTML/CSS/JavaScript y Leaflet 1.9.4 con OpenStreetMap. Flask sirve interfaz y API en un mismo origen. GitHub Pages no ejecuta este backend.
