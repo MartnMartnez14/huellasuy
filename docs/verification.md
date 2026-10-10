@@ -56,3 +56,14 @@ Corrección visual tras la prueba real de correo: las reglas display de componen
 El autor confirmó en producción el 10 de octubre registro, recepción y confirmación del enlace, acceso con borde dorado, panel administrativo y publicación/eliminación de su alerta. Recuperación real e incógnito sin sesión siguen pendientes de confirmación. Se añade autor visible (usuario y emoji) en lista y popup del mapa, conservando correos privados.
 
 Autor visible: `.venv-system/bin/python -m pytest -q`: 30 aprobadas en 8.30 s. Prueba de Chrome local con datos aislados confirmó el mismo usuario en lista y popup, tras filtro, sin errores JavaScript. La API ignora autor falsificado en el formulario, conserva identidad del creador frente a otro visitante y excluye correo/hashes.
+
+
+## Confirmación manual en producción — 10 de octubre de 2026
+
+El autor confirmó con capturas y pruebas en la instancia pública:
+- Actualización en PythonAnywhere a `b7770d5` y ejecución de pytest: **30 passed in 17.46s**.
+- Tras pulsar Reload en el panel Web, nombre de usuario y emoji visibles en lista y detalle del mapa. Un git pull por sí solo no recarga el proceso WSGI.
+- Registro y acceso de una segunda cuenta con otro correo, recepción del correo de recuperación, cambio de contraseña y nuevo acceso satisfactorios.
+- Publicación de una alerta desde esa cuenta con su identidad visible; borrado propio confirmado previamente con la cuenta principal.
+
+Estas comprobaciones manuales comunicadas por el autor completan la prueba pendiente de recuperación real mediante Brevo. No prueban todos los proveedores de correo ni sustituyen una auditoría integral. No se incorporan las capturas de correo al repositorio porque contienen enlaces privados de recuperación. Sigue pendiente la confirmación manual de acceso sin sesión en incógnito; las restricciones de acceso ya están cubiertas por pruebas automatizadas. Fotos, comentarios y otras ampliaciones quedan fuera de esta entrega.
