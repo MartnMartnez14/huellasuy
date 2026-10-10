@@ -50,3 +50,5 @@ Estas son comprobaciones manuales comunicadas por el autor, no una medición ins
 Entrega limitada a cuentas y administración; no exige implementar fotos/comentarios para activarse. Pruebas adicionales de propiedad/borrado de alertas, transporte HTTPS de correo con credenciales simuladas y limpieza de token ante fallos. El envío de enlaces reales y activación pública siguen pendientes de ejecución en PythonAnywhere. GitHub Pages devolvió HTTP 404; no hay página estática que sincronizar en esa URL.
 
 Validación de cierre local: 29 pruebas aprobadas en 7.93 s; Chrome con registro → verificación → acceso → recuperación → nuevo acceso, retirada administrativa y cierre que bloquea mapa. Cuatro anchos, sin errores JavaScript. Correo simulado; no se afirma comprobación de enlaces reales.
+
+Corrección visual tras la prueba real de correo: las reglas display de componentes sobrescribían el atributo hidden en etiquetas y avisos. Se fija hidden de forma global; Verificar correo no muestra Nueva contraseña. El autor recibió el enlace real; confirmar su consumo y acceso sigue pendiente.

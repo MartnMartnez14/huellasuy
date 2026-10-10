@@ -8,3 +8,6 @@
 
 nav { flex-wrap:wrap; } nav a { overflow-wrap:anywhere; }
 @media(max-width:600px) { header { flex-wrap:wrap; gap:12px; } nav { width:100%; gap:12px; } }
+
+/* Preserve native hidden semantics against component display rules. */
+[hidden] { display:none !important; }
