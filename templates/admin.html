@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block content %}
+<section class="workspace"><h1 class="admin-identity">{{ account.emoji }} {{ account.username }} · Administrador</h1><p>Mostramos hasta 100 cuentas y 100 alertas activas. Correos y contraseñas no se muestran.</p><p id="admin-message" role="status"></p>
+<h2>Alertas activas</h2>{% for report in reports %}<article class="card"><h3>{{ report.title }}</h3><p>{{ report.description }}</p><p>Autor: {% if report.author_name %}{{ report.author_emoji }} {{ report.author_name }}{% else %}Aviso anterior sin cuenta{% endif %}</p><button data-report="{{ report.id }}">Retirar alerta</button></article>{% else %}<p>Sin alertas activas.</p>{% endfor %}
+<h2>Cuentas</h2>{% for user in users %}<article class="card"><h3>{{ user.emoji }} {{ user.username }}</h3>{% if user.id != account.id %}<button data-user="{{ user.id }}" data-disabled="{{ 'false' if user.disabled else 'true' }}">{{ 'Rehabilitar' if user.disabled else 'Suspender' }}</button>{% endif %}</article>{% endfor %}</section>
+{% endblock %}{% block scripts %}<script src="/static/js/admin.js" defer></script>{% endblock %}

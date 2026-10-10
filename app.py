@@ -6,9 +6,11 @@ import secrets
 import time
 from datetime import datetime, timezone
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, g, current_app
 from werkzeug.exceptions import HTTPException
 
+from auth import install as install_auth, admin as is_admin
+from werkzeug.security import generate_password_hash
 from config import Config
 from database import cleanup, connect, initialize
 
@@ -22,6 +24,8 @@ def public_report(row):
                                'status_type', 'latitude', 'longitude')}
     for k in ('created_at', 'expires_at'):
         data[k] = datetime.fromtimestamp(row[k], timezone.utc).isoformat()
+    if current_app.config['AUTH_ENABLED']:
+        data['can_delete'] = bool(g.user and (row['author_id'] == g.user['id'] or is_admin(g.user)))
     data['pastel_color'] = COLORS[row['id'] % len(COLORS)]
     return data
 
@@ -72,8 +76,18 @@ def create_app(test_config=None):
     with connect(app.config['DATABASE_PATH']) as db:
         cleanup(db, app.config['CLOCK']())
 
+    app.config['DUMMY_PASSWORD_HASH'] = generate_password_hash(secrets.token_urlsafe(32)) if app.config['AUTH_ENABLED'] else ''
+    install_auth(app)
+
     @app.before_request
     def check_write():
+        if app.config['AUTH_ENABLED'] and request.path.startswith('/api/reports'):
+            if request.method != 'DELETE' and not g.user:
+                return jsonify(error='Iniciá sesión para consultar o publicar alertas.'), 401
+            if request.method in {'POST', 'DELETE'}:
+                expected = app.config['PUBLIC_ORIGIN'] or request.host_url.rstrip('/')
+                if request.headers.get('Origin') != expected:
+                    return jsonify(error='Origen no permitido.'), 403
         if request.path.startswith('/api/') and request.method in {'POST', 'DELETE'}:
             if not request.is_json:
                 return jsonify(error='Enviá datos en formato JSON.'), 415
@@ -90,7 +104,7 @@ def create_app(test_config=None):
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         response.headers['Permissions-Policy'] = 'geolocation=(self), camera=(), microphone=()'
         response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://tile.openstreetmap.org https://unpkg.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
-        if request.path.startswith('/api/'):
+        if app.config['AUTH_ENABLED'] or request.path.startswith('/api/'):
             response.headers['Cache-Control'] = 'no-store'
         return response
 
@@ -104,6 +118,8 @@ def create_app(test_config=None):
     @app.get('/r/<int:report_id>')
     @app.get('/manage/<int:report_id>')
     def home(report_id=None):
+        if app.config['AUTH_ENABLED'] and not g.user:
+            return render_template('account.html', gated=True)
         return render_template('index.html')
 
     @app.get('/<page>')
@@ -159,6 +175,8 @@ def create_app(test_config=None):
             db.execute('INSERT INTO rate_limits VALUES (?, ?)', (fingerprint, now))
             values = [data[k] for k in ('title', 'description', 'animal_type', 'status_type', 'latitude', 'longitude')]
             cursor = db.execute('INSERT INTO reports (title,description,animal_type,status_type,latitude,longitude,created_at,expires_at,delete_token_hash) VALUES (?,?,?,?,?,?,?,?,?)', values + [now, now + app.config['REPORT_TTL_HOURS'] * 3600, hashlib.sha256(token.encode()).hexdigest()])
+            if app.config['AUTH_ENABLED']:
+                db.execute('UPDATE reports SET author_id=? WHERE id=?', (g.user['id'], cursor.lastrowid))
             row = db.execute('SELECT * FROM reports WHERE id=?', (cursor.lastrowid,)).fetchone()
         return jsonify(report=public_report(row), delete_token=token, server_time=now), 201
 
@@ -166,14 +184,14 @@ def create_app(test_config=None):
     def remove(report_id):
         data = request.get_json()
         token = data.get('delete_token') if isinstance(data, dict) else None
-        if not isinstance(token, str) or len(token) > 128:
-            return jsonify(error='Enlace privado inválido.'), 403
         with connect(app.config['DATABASE_PATH']) as db:
             cleanup(db, app.config['CLOCK']())
-            row = db.execute('SELECT delete_token_hash FROM reports WHERE id=?', (report_id,)).fetchone()
+            row = db.execute('SELECT delete_token_hash,author_id FROM reports WHERE id=?', (report_id,)).fetchone()
             if not row:
                 return jsonify(error='Esta alerta ya expiró o fue eliminada.'), 404
-            if not hmac.compare_digest(row[0], hashlib.sha256(token.encode()).hexdigest()):
+            owns = app.config['AUTH_ENABLED'] and g.user and (row['author_id'] == g.user['id'] or is_admin(g.user))
+            valid_token = isinstance(token, str) and len(token) <= 128 and hmac.compare_digest(row[0], hashlib.sha256(token.encode()).hexdigest())
+            if not owns and not valid_token:
                 return jsonify(error='Enlace privado inválido.'), 403
             db.execute('DELETE FROM reports WHERE id=?', (report_id,))
         return '', 204

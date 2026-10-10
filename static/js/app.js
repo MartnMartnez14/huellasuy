@@ -35,6 +35,15 @@ function card(r, includeMapButton = true) {
       else { await copy(url); share.textContent = 'Enlace copiado'; }
     } catch (e) { if (e.name !== 'AbortError') share.textContent = 'No pudimos compartir'; }
   });
+  if (r.can_delete) {
+    const remove = add('button', 'Eliminar mi alerta'); remove.type = 'button';
+    remove.addEventListener('click', async () => {
+      if (!confirm('¿Eliminar esta alerta?')) return;
+      remove.disabled = true;
+      try { await api(`/${r.id}`, {method:'DELETE',headers:{'Content-Type':'application/json'},body:'{}'}); await refresh(); }
+      catch(error) { remove.disabled = false; $('connection').textContent = error.message; }
+    });
+  }
   if (includeMapButton) {
     const view = add('button', '📍 Ver en el mapa'); view.type = 'button';
     view.addEventListener('click', () => {
@@ -66,7 +75,9 @@ async function refresh() {
   try {
     const data = await api(); offset = data.server_time * 1000 - Date.now(); reports = data.reports; online = true;
     $('connection').textContent = '● Actualizado · Se sincroniza cada 15 segundos';
-  } catch { online = false; $('connection').textContent = 'Sin conexión con el servidor. Las alertas pueden estar desactualizadas. Reintentaremos automáticamente.'; }
+  } catch (error) {
+    if (error.status === 401) { reports = []; render(); location.reload(); return; }
+    online = false; $('connection').textContent = 'Sin conexión con el servidor. Las alertas pueden estar desactualizadas. Reintentaremos automáticamente.'; }
   finally { busy = false; render(); }
 }
 $('report').addEventListener('click', () => { dialog.showModal(); requestAnimationFrame(() => maps?.picker.invalidateSize()); });

@@ -36,3 +36,17 @@ Según las pruebas y confirmaciones del autor:
 - El 3 de octubre confirmó que el reporte de prueba se eliminó automáticamente tras 24 horas.
 
 Estas son comprobaciones manuales comunicadas por el autor, no una medición instrumentada del segundo exacto de vencimiento ni una nueva auditoría de infraestructura. No se guardan tokens privados ni coordenadas de pruebas en este registro. Las capturas proporcionadas se incluyen como documentación visual y se identifican como demostración.
+
+
+## 10 de octubre de 2026 — base de cuentas v2 (local, desactivada)
+
+- Emisor Brevo verificado y correo de prueba recibido desde PythonAnywhere: confirmación manual del autor. Todavía no se probó envío de enlaces de esta implementación contra el proveedor real.
+- `.venv-system/bin/python -m pytest -q`: 26 pruebas aprobadas. Siete pruebas nuevas cubren registro/verificación, reutilización y vencimiento de tokens, cookies, sesión, recuperación y revocación, controles de origen, administrador y suspensión, fallos de correo, límites y persistencia de autor del reporte.
+- Chrome/Playwright local con base aislada y correo simulado: registro y anchos 360, 390, 768 y 1440 sin desbordamiento ni errores JavaScript. Navegación básica mediante Tab; no equivale a auditoría completa de teclado o lector de pantalla.
+- `git diff --check`: sin errores de formato. No se modificó ni activó la instancia pública. Documentos personales no rastreados se conservaron.
+- Pendiente: flujo completo de enlaces reales, fotos/comentarios/contactos/duraciones, denuncias, cierre de cuenta, panel paginado y verificación integral antes del despliegue v2.
+
+## Cierre v2.0 — 10 de octubre de 2026
+Entrega limitada a cuentas y administración; no exige implementar fotos/comentarios para activarse. Pruebas adicionales de propiedad/borrado de alertas, transporte HTTPS de correo con credenciales simuladas y limpieza de token ante fallos. El envío de enlaces reales y activación pública siguen pendientes de ejecución en PythonAnywhere. GitHub Pages devolvió HTTP 404; no hay página estática que sincronizar en esa URL.
+
+Validación de cierre local: 29 pruebas aprobadas en 7.93 s; Chrome con registro → verificación → acceso → recuperación → nuevo acceso, retirada administrativa y cierre que bloquea mapa. Cuatro anchos, sin errores JavaScript. Correo simulado; no se afirma comprobación de enlaces reales.

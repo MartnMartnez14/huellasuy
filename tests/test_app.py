@@ -5,7 +5,7 @@ from app import create_app
 @pytest.fixture
 def setup(tmp_path):
     clock = [1700000000.0]
-    config = dict(TESTING=True, DATABASE_PATH=str(tmp_path / 'test.db'), SECRET_KEY='test-secret', CLOCK=lambda: clock[0])
+    config = dict(TESTING=True, AUTH_ENABLED=False, DATABASE_PATH=str(tmp_path / 'test.db'), SECRET_KEY='test-secret', CLOCK=lambda: clock[0])
     app = create_app(config)
     return app, app.test_client(), clock, config
 

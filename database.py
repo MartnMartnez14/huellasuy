@@ -28,8 +28,16 @@ def connect(path):
 def initialize(path):
     with connect(path) as db:
         db.executescript(SCHEMA)
+        columns = {row[1] for row in db.execute('PRAGMA table_info(reports)')}
+        if 'author_id' not in columns:
+            db.execute('ALTER TABLE reports ADD COLUMN author_id INTEGER')
 
 
 def cleanup(db, now):
     db.execute('DELETE FROM reports WHERE expires_at <= ?', (now,))
     db.execute('DELETE FROM rate_limits WHERE created_at <= ?', (now - 3600,))
+
+    if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='account_tokens'").fetchone():
+        db.execute('DELETE FROM account_tokens WHERE expires_at<=?', (now,))
+        db.execute('DELETE FROM account_sessions WHERE expires_at<=?', (now,))
+        db.execute('DELETE FROM auth_attempts WHERE created_at<=?', (now-3600,))

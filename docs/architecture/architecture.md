@@ -7,3 +7,6 @@ POST genera un token criptográfico y guarda su SHA-256. Solo la respuesta de cr
 Consultas cada 15 segundos mientras la página está visible; al volver se refresca. La interfaz usa hora del servidor para calcular vida restante y retira alertas vencidas cada 10 segundos, incluso sin conexión. La API sigue siendo la autoridad: ningún dato vencido se entrega.
 
 Redondear a tres decimales antes de insertar. No guardar ubicación exacta. Repositorio pequeño en database.py; una migración futura a PostgreSQL requiere adaptar repositorio, transacciones y esquema, no el contrato frontend.
+
+## Incremento de cuentas opcional
+`auth.py` incorpora registro verificado, sesiones privadas, correo Brevo y administración. Se habilita solo mediante `AUTH_ENABLED`; v1 mantiene su comportamiento por defecto. Ver [contratos, migración y configuración](../accounts.md).

@@ -87,3 +87,6 @@ El límite de frecuencia usa remote_addr. Detrás de un proxy sin configuración
 Leaflet se carga de un CDN. Si falla, quedan lista y campos de coordenadas. Los tiles estándar de OSM son un servicio de capacidad limitada, sin SLA; mantener atribución y Referer, respetar cache del navegador y no descargar mapas masivamente/offline. Para mayor tráfico elegir otro proveedor. [Política oficial](https://operations.osmfoundation.org/policies/tiles/), revisada 2026-10-01.
 
 Google Maps se usa solo mediante enlaces. Un eventual cambio de proveedor visual requiere actualizar map.js, CSP, atribución y documentación; nunca incorporar una clave secreta en el frontend.
+
+## Entrega de cuentas v2.0
+Las cuentas se activan explícitamente después de backup, actualización y pruebas. Consultar [configuración, migración, validación y reversión](accounts.md) antes de desplegar v2. Fotos y comentarios se posponen y no bloquean esta entrega. La clave de Brevo queda fuera del repositorio y de la carpeta pública.

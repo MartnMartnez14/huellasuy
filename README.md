@@ -6,7 +6,7 @@ Mapa comunitario temporal de animales perdidos, encontrados o vistos en Uruguay.
 Primera versión comunitaria gratuita y open source, alojada en **PythonAnywhere**. Creada por Martín Martínez García.
 
 ## Mini tutorial: usar HuellasUY
-No necesitás instalar nada, crear una cuenta ni saber programación.
+No necesitás instalar nada ni saber programación. Mientras la instancia siga en v1, no requiere cuenta; al activar v2, primero elegí Crear cuenta, verificá el correo y entrá para consultar mapa, lista y enlaces compartidos.
 
 1. **Abrí la web** desde el celular o la computadora usando el enlace de arriba.
 2. **Consultá las alertas** en el mapa o en la lista de abajo. Usá los filtros de animal y situación para encontrar lo que buscás.
@@ -48,10 +48,13 @@ Estas vistas corresponden a una etapa anterior del prototipo.
 
 </details>
 
-Proyecto open source, creado por Martín Martínez García. Sin cuentas, fotos, chats, rastreadores ni información de contacto. Diseño pastel, modo oscuro y mapa accesible mediante listado alternativo.
+Proyecto open source, creado por Martín Martínez García. La entrega v1 no tiene cuentas; v2 incorpora cuentas verificadas de forma optativa para el despliegue. Fotos, chats e información de contacto siguen fuera de esta entrega. Diseño pastel, modo oscuro y mapa accesible mediante listado alternativo.
 
 ## Cómo funciona
 Marcás dónde viste al animal, escribís una descripción y publicás. Otros visitantes consultan la misma base; su pantalla se actualiza cada 15 segundos mientras está visible. Guardá tu enlace privado para eliminar la alerta antes de que venza. No publiques datos personales.
+
+## Entrega v2.0: cuentas verificadas
+La entrega de cuentas está implementada y **desactivada por defecto hasta completar el despliegue**. Incluye acceso, recuperación, emoji de usuario, borrado de alertas propias y administración por correo verificado. La aplicación online no se actualiza con solo subir a GitHub: requiere activar y probar PythonAnywhere. Fotos, comentarios, contactos y duraciones opcionales se trabajarán otro día. Ver [cuentas y activación](docs/accounts.md).
 
 ## Tecnologías y arquitectura
 Python 3.12+, Flask, SQLite, HTML/CSS/JavaScript y Leaflet 1.9.4 con OpenStreetMap. Flask sirve interfaz y API en un mismo origen. GitHub Pages no ejecuta este backend.

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}{% block content %}
+<section class="hero"><span class="eyebrow">COMUNIDAD HUELLASUY 🇺🇾</span><h1>Entrá para cuidar<br>junto a la comunidad.</h1><p>Mapa, lista y alertas disponibles para cuentas con correo verificado.</p></section>
+{% if gated %}<div class="map-preview" aria-hidden="true"><span>🌿 🐾 🇺🇾 🌊</span></div><p>Vista ilustrativa. No contiene ubicaciones ni reportes reales.</p>{% endif %}
+<section class="workspace">
+{% if account %}<p class="{% if account_admin %}admin-identity{% endif %}">{{ account.emoji }} {{ account.username }}{% if account_admin %} · Administrador{% endif %}</p><a href="/">Ir al mapa</a>{% if account_admin %} · <a href="/admin">Administrar</a>{% endif %}<button id="logout">Cerrar sesión</button>{% endif %}
+<h2>Tu cuenta</h2><p id="account-message" role="status" aria-live="polite"></p>
+<form id="account-form">
+<label>Acción<select name="action" id="account-action"><option value="login">Entrar</option><option value="register">Crear cuenta</option><option value="forgot">Recuperar contraseña</option><option value="resend">Reenviar verificación</option></select></label>
+<label id="username-label">Nombre de usuario<input name="username" autocomplete="username" maxlength="30"></label>
+<label id="email-label" hidden>Correo electrónico<input name="email" type="email" autocomplete="email" maxlength="254"></label>
+<label id="password-label">Contraseña<input name="password" type="password" autocomplete="current-password" maxlength="128"></label>
+<p>Para crear una cuenta: usuario de 3–30 letras, números o guion bajo; contraseña de al menos 12 caracteres. El correo queda privado.</p>
+<button class="primary" id="account-submit">Continuar</button>
+</form>
+<form id="token-form" hidden><h2 id="token-title"></h2><label id="new-password-label">Nueva contraseña<input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"></label><button class="primary">Confirmar</button></form>
+</section>
+{% endblock %}{% block scripts %}<script type="module" src="/static/js/account.js"></script>{% endblock %}
